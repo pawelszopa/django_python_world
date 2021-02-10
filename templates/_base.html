@@ -17,10 +17,18 @@
 <body>
 <div class="container">
 
-    <img src="{% static 'images/logo.jpeg' %}" class="logo" alt="logo">
+<div class="row">
+    <div class="col">
+        <img src="{% static 'images/logo.jpeg' %}" class="logo" alt="logo">
 
 
 {% block content %} {% endblock %}
+
+    </div>
+
+</div>
+
+
 </div>
 {% block scripts %}
     <scripts src="{% static 'scripts/main.js' %}"></scripts>
