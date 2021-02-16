@@ -6,7 +6,5 @@ app_name = 'courses'
 
 urlpatterns = [
     path('create', views.CreateCourse.as_view(), name='create-course'),
-    path('home', views.CreateCourse.as_view(), name='home')
-
-
+    path('<int:pk>/', views.CourseDetailView.as_view(), name='course_detail')
 ]

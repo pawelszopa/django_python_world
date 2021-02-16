@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # Local
     'users.apps.UsersConfig',
     'courses.apps.CoursesConfig',
+    'home.apps.HomeConfig',
 ]
 
 MIDDLEWARE = [
@@ -151,6 +152,11 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 ]
+
+#Media to wszystkie rzeczy co wrzucaja uzytkownucy
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
 
 AUTH_USER_MODEL = 'users.CustomUser'
 # login robi redirect na profile my niue mamy profile wiec tutaj zmieniamy na home
