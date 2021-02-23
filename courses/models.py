@@ -101,7 +101,7 @@ class ItemBase(models.Model):
     # %(class)s_related podmienia w klasach ktore dziedzicza to zmiane wiec w file bedzie Files_related
     title = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True

@@ -6,7 +6,7 @@ from courses.models import Course, Module
 ModuleFormsSet = inlineformset_factory(
     Course,
     Module,
-    field=['title', 'description'],
+    fields=['title', 'description'],
     extra=2,
     can_delete=True)
 

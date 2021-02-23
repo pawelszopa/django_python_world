@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-{#{% load embed_video_tags %}#}
+{% load embed_video_tags %}
 {% load course %}
 
 {% block content %}
@@ -11,33 +11,9 @@
             <h1 class="display-4 font-italic">{{ course.title }}</h1>
             <p><i>Created by: {{ course.owner.fullname }} at {{ course.created|date }}</i></p>
             <p class="lead my-3">{{ course.overview }}</p>
-            {% if user.is_authenticated %}
-                {% if request.user.id == course.owner.id %}
-                    <p class="lead mb-0 btn-group-sm">
-                        <a href="{% url 'courses:course-edit' course.slug %}"
-                           class="text-white font-weight-bold btn btn-danger float-right ml-2">Edit Course</a>
-                        <a href="{% url 'courses:course-delete' course.slug %}"
-                           class="text-white font-weight-bold btn btn-danger float-right ml-2">Delete Course</a>
-                        <a href="{% url 'courses:course-modules-update' course.pk %}"
-                           class="text-white font-weight-bold btn btn-danger float-right ml-2">Edit Modules</a>
-                    </p>
-                {% else %}
-                    <p class="lead mb-0 btn-group-sm">
-                        {% if not course in user.courses_joined.all %}
-                            <form action="{% url 'courses:student-enrollment' course.slug %}" method="post">
-                                {% csrf_token %}
-                                <input type="submit" class="text-white font-weight-bold btn btn-danger
-                                float-right ml-2"
-                                       value="Take this Course">
-                            </form>
-                            </p>
-                        {% else %}
-                            <button class="btn btn-danger disabled text-white float-right ml-2 font-weight-bold">Take this Course</button>
-                        {% endif %}
-                {% endif %}
-            {% endif %}
         </div>
     </div>
+
     <div class="row mt-2 mb-2">
         <div class="container mt-2">
             {% if course.modules.all|length > 0 %}
@@ -95,42 +71,27 @@
                                                                 <span class="badge badge-primary badge-pill float-right mr-2">
                                                                 {{ item|model_name }}</span>
                                                             </li>
-                                                            {#                                                        <div class="collapse multi-collapse"#}
-                                                            {#                                                             id="{{ item.title|cut:" "|lower }}">#}
-                                                            {#                                                            {% if item|model_name == 'image' %}#}
-                                                            {#                                                                <div class="card card-body">#}
-                                                            {#                                                                    <img src="{{ item.content.url }}" alt=""#}
-                                                            {#                                                                         class="img-fluid align-content-center"/>#}
-                                                            {#                                                                </div>#}
-                                                            {#                                                            {% elif item|model_name == 'video' %}#}
-                                                            {#                                                                <div class="card card-body">{% video item.content "small" %}</div>#}
-                                                            {#                                                            {% elif item|model_name == 'file' %}#}
-                                                            {#                                                                <div class="card card-body"><a#}
-                                                            {#                                                                        href="{{ item.content.url }}">Grab File</a>#}
-                                                            {#                                                                </div>#}
-                                                            {#                                                            {% else %}#}
-                                                            {#                                                                <div class="card card-body">{{ item.content }}</div>#}
-                                                            {#                                                            {% endif %}#}
-                                                            {#                                                        </div>#}
+                                                            <div class="collapse multi-collapse"
+                                                                 id="{{ item.title|cut:" "|lower }}">
+                                                                {% if item|model_name == 'image' %}
+                                                                    <div class="card card-body">
+                                                                        <img src="{{ item.content.url }}" alt=""
+                                                                             class="img-fluid align-content-center"/>
+                                                                    </div>
+                                                                {% elif item|model_name == 'video' %}
+                                                                    <div class="card card-body">{% video item.content "small" %}</div>
+                                                                {% elif item|model_name == 'file' %}
+                                                                    <div class="card card-body"><a
+                                                                            href="{{ item.content.url }}">Grab File</a>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div class="card card-body">{{ item.content }}</div>
+                                                                {% endif %}
+                                                            </div>
                                                         {% endwith %}
                                                     {% endfor %}
                                                 </ul>
                                                 <hr>
-                                            {% endif %}
-                                            {% if request.user.id == module.course.owner.id %}
-                                                <h3>Add Content:</h3>
-                                                <div class="offset-3 col-md-3 offset-3 ">
-                                                    <div class="btn-group">
-                                                        <a href="{% url 'courses:module-content-create' module.id 'text' %}"
-                                                           class="btn btn-sm btn-danger">Text</a>
-                                                        <a href="{% url 'courses:module-content-create' module.id 'image' %}"
-                                                           class="btn btn-sm btn-danger">Image</a>
-                                                        <a href="{% url 'courses:module-content-create' module.id 'file' %}"
-                                                           class="btn btn-sm btn-danger">File</a>
-                                                        <a href="{% url 'courses:module-content-create' module.id 'video' %}"
-                                                           class="btn btn-sm btn-danger">Video</a>
-                                                    </div>
-                                                </div>
                                             {% endif %}
                                         {% else %}
                                             <p><a href="{% url 'users:login' %}">Login</a> to view course contents!</p>

@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <form class="form-signin" action="" method="post">
+        {% if form.errors %}
+            {% for error in form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Something went wrong! </strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% csrf_token %}
+        <h3 class="mb-3 text-center">Please sign in</h3>
+       {{ form|crispy }}
+        </div>
+        <button class="btn btn-danger btn-block mt-2 pt-2" type="submit">Login</button>
+    </form>
+{% endblock %}

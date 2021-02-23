@@ -1,20 +1,23 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.forms import modelform_factory
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django.views.generic.base import TemplateResponseMixin, View
 
+from django.apps import apps
 from courses.forms import ModuleFormsSet
-from courses.models import Course
+from courses.models import Course, Module, Content
 
-
-class CreateCourse(CreateView):
+#kolejnosc ma znaczenie w classach
+class CreateCourse(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Course
     fields = ['title', 'subject', 'slug', 'overview', 'course_image']
     template_name = 'courses/create_course.html'
     # permision mozna dodawac w panelu admina - ale tworzac model kazdy model ma 4 permision
     permission_required = 'courses.add_course'  # mozna edytowac czesc strony grupa moze miec czesc permision itp
-    login_url = reverse_lazy('user:login')  # dlatego ze jak ktos zmieni config to nie trzeba bylo tyutaj mzmieniac
-    raise_exceptions = True
+    login_url = reverse_lazy('users:login')  # dlatego ze jak ktos zmieni config to nie trzeba bylo tyutaj mzmieniac
+    raise_exceptions = False
     success_url = reverse_lazy('home')
 
     # wszczepienie uzytkownika
@@ -33,7 +36,7 @@ class CourseDetailView(DetailView):
     context_object_name = 'course'  # dane z modelu trafia pod nazwa object a tak to mamy course
 
 
-class CourseUpdateView(UpdateView):
+class CourseUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = 'courses/update_course.html'
     model = Course
     login_url = reverse_lazy('user:login')
@@ -44,7 +47,7 @@ class CourseUpdateView(UpdateView):
     success_url = reverse_lazy('home')
 
 
-class CourseDeleteView(DeleteView):
+class CourseDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Course
     permission_required = 'courses.delete_course'
     template_name = 'courses/delete_course.html'
@@ -74,3 +77,52 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
             formset.save()  # tylko form na podsawie modela save w innym przypadku obj.create
             return redirect('home')
         return self.render_to_response({'course': self.course, 'formset': formset})
+
+
+class ContentCreateUpdateView(TemplateResponseMixin, View):
+    template_name = 'courses/module_contents.html'
+    module = None
+    model = None
+    obj = None
+
+    @staticmethod
+    def get_model(model_name):
+        if model_name in ['text', 'video', 'image', 'file']:
+            return apps.get_model(app_label='courses', model_name=model_name)
+        return None
+
+    @staticmethod
+    def get_form(model, *args, **kwargs):
+        Form = modelform_factory(model, exclude=['owner', 'order', 'created', 'updated'])
+        return Form(*args, **kwargs)
+
+    def dispatch(self, request, module_id, model_name, id=None):
+        #TODO check WTF with course __ owner
+        self.module = get_object_or_404(Module, id=module_id, course__owner=request.user)
+        self.model = self.get_model(model_name)
+        if id:
+            self.obj = get_object_or_404(self.model, id=id, owner=request.user)
+        return super().dispatch(request, module_id, model_name, id)
+
+    # __ w course name oznacza relacja do gory
+
+    def get(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model, instance=self.obj)
+        return self.render_to_response({'form': form, 'object': self.obj})
+
+    def post(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
+        # data zeby po przeladowaniu strony dane z forma zostaly a file dlatego ze mamy zdjecia i video
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.owner = request.user
+            obj.save()
+            # obj nie jest zakomitowany trzymamy jego instancje i na instancji dodajemy ownera z requesta.
+
+            if not id:
+                Content.objects.create(module=self.module, item=obj)
+            #aby dodac slaga jestesmy w course i dziedziczy po course i mamy slug
+            return redirect('courses:course-detail', self.module.course.id)
+
+        return self.render_to_response({'form': form, 'object': self.obj})
