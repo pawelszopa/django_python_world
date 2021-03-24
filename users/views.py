@@ -1,9 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Permission, Group
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-# Create your views here.
 from django.urls import reverse_lazy
 
 from courses.models import Course
@@ -12,10 +10,8 @@ from users.forms import LoginForm, RegistrationForm
 
 def login_user(request):
     if request.method == 'POST':
-        # request jest tutaj dlatego ze dziedziczy po authentication form
         form = LoginForm(request, request.POST)
         if form.is_valid():
-            # cleaned data validacja czy np nie ma JS w formularzy
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(email=username, password=password)
@@ -37,12 +33,10 @@ def logout_user(request):
 
 
 def registration_view(request):
-    # nie trzeba elsa
     form = RegistrationForm(request.POST or None)
     if request.method == 'POST':
 
         if form.is_valid():
-            # cleaned data validacja czy np nie ma JS w formularzy
             user = form.save(commit=False)
             user.is_active = True
             user.save()

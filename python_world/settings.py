@@ -29,7 +29,6 @@ ALLOWED_HOSTS = [
     '0.0.0.0'
 ]
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,17 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # Third-party
+
     'crispy_forms',
-    # 'allauth',
-    # 'allauth.account',
 
-    #github
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.github',
-
-
-    # Local
     'users.apps.UsersConfig',
     'courses.apps.CoursesConfig',
     'home.apps.HomeConfig',
@@ -67,21 +58,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'python_world.urls'
-# TODO how to setup jinja2 in correct way
+
 TEMPLATES = [
-    # {
-    #     'BACKEND': 'django.template.backends.jinja2.Jinja2',
-    #     'DIRS': [os.path.join(BASE_DIR, 'templates')],
-    #     'APP_DIRS': True,
-    #     'OPTIONS': {
-    #         'context_processors': [
-    #             'django.template.context_processors.debug',
-    #             'django.template.context_processors.request',
-    #             'django.contrib.auth.context_processors.auth',
-    #             'django.contrib.messages.context_processors.messages',
-    #         ],
-    #     },
-    # },
+
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
@@ -155,18 +134,18 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 ]
 
-#Media to wszystkie rzeczy co wrzucaja uzytkownucy
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
 AUTH_USER_MODEL = 'users.Account'
-# login robi redirect na profile my niue mamy profile wiec tutaj zmieniamy na home
+
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT = 'home'
 
-# on wygeneruje hrml (zmodyfikuje form) wiec dajemy jaka biblioteka
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 SITE_ID = 1
@@ -177,13 +156,10 @@ AUTHENTICATION_BACKENDS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_SESSION_REMEMBER = True
-# remember me
-# usowanie haslo x2
+
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
-# aby sprawdzic czy email istnieje trzeba zrobic zapytanie do bazy i to ponizej sprawdza
 ACCOUNT_UNIQUE_EMAIL = True
-# github
-# ACCOUNT_EMAIL_VERIFICATION = 'none'
+

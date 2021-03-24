@@ -19,11 +19,9 @@ class Subject(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # db trigger
         if not self.slug:
             self.slug = slugify(self.title)
             super(Subject, self).save(*args, **kwargs)
-            # przekazujemy instancje klasy i obiekt, bardziej explisity polimorfism
 
 
 class Course(models.Model):
@@ -36,23 +34,21 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     overview = models.TextField()
-    # text field bo kilka linijek
+
     created = models.DateTimeField(auto_now_add=True)
-    # relacja wiele do wielu
+
     students = models.ManyToManyField(get_user_model(),
                                       related_name='courses_joined',
-                                      blank=True)  # blannk inicjalizuje to nie jest ten sam blank co w texfield
+                                      blank=True)
     course_image = models.ImageField(upload_to='images')
 
     class Meta:
-        # - created jako descenging
         ordering = ['-created']
 
     def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
-        # db trigger
         if not self.slug:
             self.slug = slugify(self.title)
         super(Course, self).save(*args, **kwargs)
@@ -77,7 +73,6 @@ class Content(models.Model):
     module = models.ForeignKey(Module,
                                related_name='contents',
                                on_delete=models.CASCADE)
-    # Content Type ! important read in doc what i s COntent Type
     content_type = models.ForeignKey(ContentType,
                                      on_delete=models.CASCADE,
                                      limit_choices_to={'model__in': (
@@ -87,7 +82,7 @@ class Content(models.Model):
                                          'file'
                                      )})
     object_id = models.PositiveIntegerField()
-    item = GenericForeignKey('content_type', 'object_id')  # pozwala na relacje do kilku
+    item = GenericForeignKey('content_type', 'object_id')
     order = OrderField(blank=True, for_fields=['module'])
 
     class Meta:
@@ -98,7 +93,6 @@ class ItemBase(models.Model):
     owner = models.ForeignKey(get_user_model(),
                               related_name='%(class)s_related',
                               on_delete=models.CASCADE)
-    # %(class)s_related podmienia w klasach ktore dziedzicza to zmiane wiec w file bedzie Files_related
     title = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

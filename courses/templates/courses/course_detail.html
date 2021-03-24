@@ -95,23 +95,6 @@
                                                                 <span class="badge badge-primary badge-pill float-right mr-2">
                                                                 {{ item|model_name }}</span>
                                                             </li>
-                                                            {#                                                        <div class="collapse multi-collapse"#}
-                                                            {#                                                             id="{{ item.title|cut:" "|lower }}">#}
-                                                            {#                                                            {% if item|model_name == 'image' %}#}
-                                                            {#                                                                <div class="card card-body">#}
-                                                            {#                                                                    <img src="{{ item.content.url }}" alt=""#}
-                                                            {#                                                                         class="img-fluid align-content-center"/>#}
-                                                            {#                                                                </div>#}
-                                                            {#                                                            {% elif item|model_name == 'video' %}#}
-                                                            {#                                                                <div class="card card-body">{% video item.content "small" %}</div>#}
-                                                            {#                                                            {% elif item|model_name == 'file' %}#}
-                                                            {#                                                                <div class="card card-body"><a#}
-                                                            {#                                                                        href="{{ item.content.url }}">Grab File</a>#}
-                                                            {#                                                                </div>#}
-                                                            {#                                                            {% else %}#}
-                                                            {#                                                                <div class="card card-body">{{ item.content }}</div>#}
-                                                            {#                                                            {% endif %}#}
-                                                            {#                                                        </div>#}
                                                         {% endwith %}
                                                     {% endfor %}
                                                 </ul>

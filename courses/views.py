@@ -9,31 +9,28 @@ from django.apps import apps
 from courses.forms import ModuleFormsSet
 from courses.models import Course, Module, Content
 
-#kolejnosc ma znaczenie w classach
+
 class CreateCourse(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Course
     fields = ['title', 'subject', 'slug', 'overview', 'course_image']
     template_name = 'courses/create_course.html'
-    # permision mozna dodawac w panelu admina - ale tworzac model kazdy model ma 4 permision
-    permission_required = 'courses.add_course'  # mozna edytowac czesc strony grupa moze miec czesc permision itp
-    login_url = reverse_lazy('users:login')  # dlatego ze jak ktos zmieni config to nie trzeba bylo tyutaj mzmieniac
+    permission_required = 'courses.add_course'
+    login_url = reverse_lazy('users:login')
     raise_exceptions = False
     success_url = reverse_lazy('home')
 
-    # wszczepienie uzytkownika
     def form_valid(self, form):
-        form.instance.owner = self.request.user  # jak we flasku form.data
+        form.instance.owner = self.request.user
         print('------------------------------')
         print(form.cleaned_data)
         return super().form_valid(
-            form)  # form valid musi zwracac http response, i jak nie chcemy to robumy super().form.valid(form)
-        # oznacza to ze wywolujemy classe po ktorej dziedziczymy wywoujemy metode i obiekt
+            form)
 
 
 class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/course_detail.html'
-    context_object_name = 'course'  # dane z modelu trafia pod nazwa object a tak to mamy course
+    context_object_name = 'course'
 
 
 class CourseUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -56,7 +53,6 @@ class CourseDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 
 
 class CourseModuleUpdateView(TemplateResponseMixin, View):
-    # Mixin to klasa ktora moze dziedziczyc po innych klasach i ona zbiera kilka klas do siebie.
     template_name = 'courses/add_modules_course.html'
     course = None
 
@@ -74,7 +70,7 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
     def post(self, request, *args, **kwargs):
         formset = self.get_formset(data=request.POST)
         if formset.is_valid():
-            formset.save()  # tylko form na podsawie modela save w innym przypadku obj.create
+            formset.save()
             return redirect('home')
         return self.render_to_response({'course': self.course, 'formset': formset})
 
@@ -97,14 +93,11 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
         return Form(*args, **kwargs)
 
     def dispatch(self, request, module_id, model_name, id=None):
-        #TODO check WTF with course __ owner
         self.module = get_object_or_404(Module, id=module_id, course__owner=request.user)
         self.model = self.get_model(model_name)
         if id:
             self.obj = get_object_or_404(self.model, id=id, owner=request.user)
         return super().dispatch(request, module_id, model_name, id)
-
-    # __ w course name oznacza relacja do gory
 
     def get(self, request, module_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj)
@@ -112,17 +105,15 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
 
     def post(self, request, module_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
-        # data zeby po przeladowaniu strony dane z forma zostaly a file dlatego ze mamy zdjecia i video
 
         if form.is_valid():
             obj = form.save(commit=False)
             obj.owner = request.user
             obj.save()
-            # obj nie jest zakomitowany trzymamy jego instancje i na instancji dodajemy ownera z requesta.
 
             if not id:
                 Content.objects.create(module=self.module, item=obj)
-            #aby dodac slaga jestesmy w course i dziedziczy po course i mamy slug
+
             return redirect('courses:course-detail', self.module.course.id)
 
         return self.render_to_response({'form': form, 'object': self.obj})

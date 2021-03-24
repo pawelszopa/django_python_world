@@ -2,12 +2,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 
-# sami  piszemy fielda
+
 
 class OrderField(models.PositiveIntegerField):
     def __init__(self, for_fields=None, *args, **kwargs):
         self.for_fields = for_fields
-        super().__init__(*args, **kwargs) # wywolanie rodzica aby reszte smieci od django mu dac
+        super().__init__(*args, **kwargs)
 
     def pre_save(self, model_instance, add):
         if getattr(model_instance, self.attname) is None:

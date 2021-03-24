@@ -10,10 +10,10 @@ class RegistrationForm(ModelForm):
     password = CharField(label='Password confirmation', widget=PasswordInput)
 
     class Meta:
-        model = get_user_model()  # take user_model from AUTH_USER_MODEL settings so this will not duplicate and if in one place change it will change here
+        model = get_user_model()
         fields = ("email", "fullname", "is_instructor", "password")
 
-    #nazwa clean_password MUSI byc
+
     def clean_password_confirm(self):
         password = self.cleaned_data.get('password')
         password_confirm = self.cleaned_data.get('password_confirm')
@@ -26,7 +26,6 @@ class RegistrationForm(ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
-        # hasowanie hasla z register
         if commit:
             user.save()
 

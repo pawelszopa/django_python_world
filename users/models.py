@@ -1,8 +1,6 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import AbstractUser, PermissionsMixin, Group
-from django.db import models
+from django.contrib.auth.models import PermissionsMixin, Group
 
-# Create your models here.
 from django.db.models import EmailField, CharField, BooleanField, DateTimeField
 
 
@@ -56,11 +54,5 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     objects = MyAccountManager()
 
-    #  chcemy jej dodadodatowe funkcjonalnosci - MyAccountManager  dodajemy managera Course.objects.get() - to jest ten account manager
-    # wiekszosc klas w pythonie ma podstawowe funkcjonalnosci, a reszte  dodajemy manageremi
-    # tabele nie maja metod - ale dodajemy te metody myuaccount managera.
-    # jesli nie bedzie myaccountmanagera to wtedy account bedzie mial managera z abstractbaseusera
-
-    # email and password are on different level so no needs for them to be in requred  fields
     def __str__(self):
         return self.email
